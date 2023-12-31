@@ -1,7 +1,7 @@
 import dash
 from dash import html, dcc, Output, Input, callback
 from flask_login import current_user
-from quant_tradr.app.login_handler import require_login
+from quant_tradr.apps.login_handler import require_login
 
 
 dash.register_page(__name__)

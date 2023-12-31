@@ -1,8 +1,12 @@
 version: '3'
 
 services:
+
   web:
-    build: ./Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn --bind 0.0.0.0:8000 quant_tradr.app:server
     ports:
       - "8000:8000"
-    network_mode: host
+    network_mode: bridge

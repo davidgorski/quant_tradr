@@ -24,7 +24,7 @@ app = dash.Dash(
     __name__,
     server=server,
     use_pages=True,
-    pages_folder="quant_tradr/app/pages",
+    pages_folder="apps/pages",
     suppress_callback_exceptions=True,
 )
 
@@ -94,5 +94,5 @@ def login_button_click(n_clicks, username, password):
         return "Incorrect  password"
 
 
-if __name__ == "__main__":
-    app.run_server(debug=True)
+# if __name__ == "__main__":
+#     app.run_server(debug=True)

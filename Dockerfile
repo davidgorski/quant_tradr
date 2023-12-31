@@ -1,16 +1,13 @@
 FROM python:3.11-slim-bookworm
 
-RUN apt-get update -y
-RUN apt-get install gunicorn3 -y
+WORKDIR /app
 
-COPY requirements.txt requirements.txt
-COPY . /opt/
+COPY requirements.txt .
 
-RUN pip3 install -r requirements.txt
-WORKDIR /opt/
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["gunicorn3", "-b", "0.0.0.0:8000", "app:app", "--workers=5"]
+COPY . .
 
+EXPOSE 5000
 
-
-
+# CMD ["gunicorn", "quant_tradr.app:server", "-b", "0.0.0.0:5000"]
