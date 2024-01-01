@@ -9,11 +9,20 @@ services:
       - "6379:6379"
     # network_mode: host
 
-  web:
+  nginx:
     build:
-      context: .
-      dockerfile: webapp/Dockerfile
-    container_name: web
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    environment:
+      - SERVER_NAME=0.0.0.0
+    restart: always
+
+  webapp:
+    build:
+      context: ./webapp
+      dockerfile: Dockerfile
+    container_name: webapp
     command: gunicorn --bind 0.0.0.0:8000 webapp.app:server
     ports:
       - "8000:8000"
