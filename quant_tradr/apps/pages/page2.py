@@ -1,6 +1,8 @@
 import dash
 from dash import html, dcc, Output, Input, callback
 from flask_login import current_user
+
+from quant_tradr import redis_client
 from quant_tradr.apps.login_handler import require_login
 
 
@@ -25,6 +27,9 @@ def layout():
             dcc.Link("Go to Page 1", href="/page1"),
             html.Br(),
             dcc.Link("Go back to home", href="/"),
+            html.Br(),
+            html.Button(id="button-counter", n_clicks=0),
+            html.Div(id="div-counter", children=[]),
         ]
     )
 
@@ -32,3 +37,9 @@ def layout():
 @callback(Output("page-2-content", "children"), Input("page-2-radios", "value"))
 def page_2_radios(value):
     return f'You have selected "{value}"'
+
+
+@callback(Output("div-counter", "children"), Input("button-counter", "n_clicks"))
+def on_button_counter(n_clicks):
+    redis_client.get_redis_client().incr('hits')
+    return f"Number of hits {redis_client.get_redis_client().get('hits')}"

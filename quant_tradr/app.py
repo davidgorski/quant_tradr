@@ -13,14 +13,15 @@ For other Authentication options see:
 import os
 from flask import Flask
 from flask_login import login_user, LoginManager, UserMixin, current_user
-
 import dash
-from dash import dcc, html, Input, Output, State
+from dash import dcc, html, Input, Output, State, Dash
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
 
 
 # Exposing the Flask Server to enable configuring it for logging in
-server = Flask(__name__)
-app = dash.Dash(
+server: Flask = Flask(__name__)
+app: Dash = dash.Dash(
     __name__,
     server=server,
     use_pages=True,
@@ -28,13 +29,14 @@ app = dash.Dash(
     suppress_callback_exceptions=True,
 )
 
+
 # Keep this out of source code repository - save in a file or a database
 #  passwords should be encrypted
 VALID_USERNAME_PASSWORD = {"test": "test", "hello": "world"}
 
 
 # Updating the Flask Server configuration with Secret Key to encrypt the user session cookie
-server.config.update(SECRET_KEY=os.getenv("SECRET_KEY"))
+server.config.update(SECRET_KEY=os.getenv("FLASK_SECRET_KEY"))
 
 # Login manager object will be used to login / logout users
 login_manager = LoginManager()
@@ -92,7 +94,3 @@ def login_button_click(n_clicks, username, password):
             login_user(User(username))
             return "Login Successful"
         return "Incorrect  password"
-
-
-# if __name__ == "__main__":
-#     app.run_server(debug=True)

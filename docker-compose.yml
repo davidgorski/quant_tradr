@@ -2,11 +2,23 @@ version: '3'
 
 services:
 
+  redis:
+    image: redislabs/redismod
+    container_name: redis
+    ports:
+      - "6379:6379"
+    # network_mode: host
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: web
     command: gunicorn --bind 0.0.0.0:8000 quant_tradr.app:server
     ports:
       - "8000:8000"
-    network_mode: bridge
+    # network_mode: host
+    depends_on:
+      - redis
+    environment:
+      - FLASK_SECRET_KEY=pP3&L4N:o9q'E_#@/fqo8mDL&VFvvB
