@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:1.25.3-alpine
 
-RUN rm /etc/nginx/conf.d/default.conf
-COPY /quant_tradr/nginx/quant_tradr.conf /etc/nginx/conf.d
+COPY /quant_tradr/nginx/default.conf /etc/nginx/conf.d/default.conf
+RUN rm /etc/nginx/sites-enabled/default
