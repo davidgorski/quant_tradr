@@ -11,8 +11,8 @@ services:
 
   nginx:
     build:
-      context: ./nginx
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: quant_tradr/nginx/Dockerfile
     container_name: nginx
     environment:
       - SERVER_NAME=0.0.0.0
@@ -20,10 +20,10 @@ services:
 
   webapp:
     build:
-      context: ./webapp
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: quant_tradr/webapp/Dockerfile
     container_name: webapp
-    command: gunicorn --bind 0.0.0.0:8000 webapp.app:server
+    command: gunicorn --bind 0.0.0.0:8000 quant_tradr.webapp.app:server
     ports:
       - "8000:8000"
     # network_mode: host
