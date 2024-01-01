@@ -7,6 +7,7 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    # network_mode: host
 
   webapp:
     build:
@@ -20,6 +21,7 @@ services:
       - redis
     environment:
       - FLASK_SECRET_KEY=pP3&L4N:o9q'E_#@/fqo8mDL&VFvvB
+    # network_mode: host
 
   nginx:
     build:
@@ -30,3 +32,4 @@ services:
       - "80:80"
     depends_on:
       - webapp
+    # network_mode: host
