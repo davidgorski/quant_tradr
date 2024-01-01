@@ -25,7 +25,7 @@ app: Dash = dash.Dash(
     __name__,
     server=server,
     use_pages=True,
-    pages_folder="apps/pages",
+    pages_folder="pages",
     suppress_callback_exceptions=True,
 )
 

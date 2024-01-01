@@ -2,8 +2,8 @@ import dash
 from dash import html, dcc, Output, Input, callback
 from flask_login import current_user
 
-from quant_tradr import redis_client
-from quant_tradr.apps.login_handler import require_login
+from webapp import redis_client
+from webapp.login_handler import require_login
 
 
 dash.register_page(__name__)

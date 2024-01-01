@@ -12,9 +12,9 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: webapp/Dockerfile
     container_name: web
-    command: gunicorn --bind 0.0.0.0:8000 quant_tradr.app:server
+    command: gunicorn --bind 0.0.0.0:8000 webapp.app:server
     ports:
       - "8000:8000"
     # network_mode: host
