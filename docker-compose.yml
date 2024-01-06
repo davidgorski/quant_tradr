@@ -1,35 +1,41 @@
 version: '3'
 
 services:
-
   redis:
     image: redislabs/redismod
     container_name: redis
     ports:
       - "6379:6379"
-    # network_mode: host
 
   webapp:
     build:
       context: .
       dockerfile: quant_tradr/webapp/Dockerfile
     container_name: webapp
-    command: gunicorn --bind 0.0.0.0:8000 quant_tradr.webapp.app:server
-    ports:
-      - "8000:8000"
     depends_on:
       - redis
     environment:
-      - FLASK_SECRET_KEY=pP3&L4N:o9q'E_#@/fqo8mDL&VFvvB
-    # network_mode: host
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+    env_file:
+      - .env
 
   nginx:
-    build:
-      context: .
-      dockerfile: quant_tradr/nginx/Dockerfile
     container_name: nginx
-    ports:
-      - "80:80"
+    build:
+      context: ./nginx
+      network: host
+      args:
+        - CERTBOT_EMAIL=david.a.gorski@gmail.com
+        - DOMAIN_LIST=dg-quant-tradr.com
+    restart: always
     depends_on:
       - webapp
-    # network_mode: host
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - letsencrypt:/etc/letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+
+volumes:
+  letsencrypt:

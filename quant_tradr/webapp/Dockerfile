@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8000
 
-# CMD ["gunicorn", "quant_tradr.app:server", "-b", "0.0.0.0:5000"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "quant_tradr.webapp.app:server", "--timeout", "180", "--log-level=debug"]
