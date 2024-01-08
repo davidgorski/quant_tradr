@@ -39,4 +39,4 @@ jobs:
 
       - name: Connect to EC2 instance and deploy Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-44-219-245-255.compute-1.amazonaws.com 'cd /home/ubuntu  && sudo docker-compose --env-file secrets.env  up -d'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-44-219-245-255.compute-1.amazonaws.com 'cd /home/ubuntu && sudo docker-compose stop && sudo docker-compose --env-file secrets.env up -d'
