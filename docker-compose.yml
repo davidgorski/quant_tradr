@@ -15,7 +15,7 @@ services:
     depends_on:
       - redis
     environment:
-      - FLASK_SECRET_KEY=pP3&L4N:o9q'E_#@/fqo8mDL&VFvvB
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
 
   nginx:
     container_name: nginx
