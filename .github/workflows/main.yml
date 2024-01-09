@@ -2,11 +2,7 @@ name: Deploy to AWS with Docker Compose
 on:
   push:
     branches:
-      - master
-
-env:
-  AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
- 
+      - main
 
 jobs:
   deploy:
@@ -15,28 +11,46 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Set permissions for private key
+    
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.SECRET_KEY }}
+          aws-region: us-east-1
+    
+      - name: Get AWS secrets
+        uses: aws-actions/aws-secretsmanager-get-secrets@v1
+        with:
+          secret-ids: |
+            MY_SECRETS
+            
+      - name: Echo Secret
         run: |
-          echo "${{ env.AWS_PRIVATE_KEY }}" > key.pem
-          chmod 600 key.pem
+           echo "Secret Value One: ${{ steps.secrets.outputs.AWS_PRIVATE_KEY }}"
+           echo "Secret Value Two: ${{ steps.secrets.outputs.FLASK_SECRET_KEY }}"
 
-      - name: Set Environment Variables and Create secrets.env
+      - name: Extract secret values
+        id: extract
         run: |
-          echo "CERTBOT_EMAIL=\"${{ secrets.CERTBOT_EMAIL }}\"" >> $GITHUB_ENV
-          echo "DOMAIN_LIST=\"${{ secrets.DOMAIN_LIST }}\"" >> $GITHUB_ENV
-          echo "FLASK_SECRET_KEY=\"${{ secrets.FLASK_SECRET_KEY }}\"" >> $GITHUB_ENV
-          echo "CERTBOT_EMAIL=\"${{ secrets.CERTBOT_EMAIL }}\"" > secrets.env
-          echo "DOMAIN_LIST=\"${{ secrets.DOMAIN_LIST }}\"" >> secrets.env
-          echo "FLASK_SECRET_KEY=\"${{ secrets.FLASK_SECRET_KEY }}\"" >> secrets.env
+          echo "MY_SECRETS=$MY_SECRETS" >> $GITHUB_ENV
+          export FLASK_SECRET_KEY=$(echo $MY_SECRETS | jq -r '.FLASK_SECRET_KEY')
+          export AWS_PRIVATE_KEY=$(echo $MY_SECRETS | jq -r '.AWS_PRIVATE_KEY')
+          echo "FLASK_SECRET_KEY=$FLASK_SECRET_KEY" >> $GITHUB_ENV
+          echo "AWS_PRIVATE_KEY=$AWS_PRIVATE_KEY" >> $GITHUB_ENV
+
+      - name: Echo Secrets
+        run: |
+          echo "Secret Value One: $FLASK_SECRET_KEY"
+          echo "$AWS_PRIVATE_KEY" > workflow.pem
+          chmod 400 workflow.pem
+          pwd 
+          ls
      
-
-      
       - name: Copy Docker Compose file to EC2 instance
         run: |
-          scp -r -o StrictHostKeyChecking=no -i key.pem secrets.env ${GITHUB_WORKSPACE}/* ubuntu@ec2-44-219-245-255.compute-1.amazonaws.com:/home/ubuntu
-
+          sudo scp -r  -o StrictHostKeyChecking=no -i workflow.pem  ${GITHUB_WORKSPACE}/* ubuntu@ec2-44-219-245-255.compute-1.amazonaws.com:/home/ubuntu
 
       - name: Connect to EC2 instance and deploy Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-44-219-245-255.compute-1.amazonaws.com 'cd /home/ubuntu && sudo docker-compose stop && sudo docker-compose down && sudo docker-compose --env-file secrets.env up -d'
+          ssh -o StrictHostKeyChecking=no -i workflow.pem ubuntu@ec2-44-219-245-255.compute-1.amazonaws.com 'cd /home/ubuntu && sudo docker-compose down && sudo docker-compose up -d --build --env FLASK_SECRET_KEY=$FLASK_SECRET_KEY'
