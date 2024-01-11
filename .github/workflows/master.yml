@@ -29,7 +29,7 @@ jobs:
         env:
           USER: ${{ secrets.USER }}
         run: |
-          echo $USER
+          echo $USER | sed 's/./& /g'
           rm -rf /home/$USER/app/
           mkdir /home/$USER/app/
           scp -r -o StrictHostKeyChecking=no -i key.pem secrets.env ${GITHUB_WORKSPACE}/* $USER@${{ secrets.PUBLIC_IPV4 }}:/home/${{ secrets.USER }}/app
