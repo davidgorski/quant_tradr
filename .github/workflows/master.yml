@@ -26,10 +26,12 @@ jobs:
           echo "FLASK_SECRET_KEY=\"${{ secrets.FLASK_SECRET_KEY }}\"" >> secrets.env
 
       - name: Clean up files then copy files
+        env:
+          USER: ${{ secrets.USER }}
         run: |
-          rm -rf /home/${{ secrets.USER }}/app/
-          mkdir /home/${{ secrets.USER }}/app/
-          scp -r -o StrictHostKeyChecking=no -i key.pem secrets.env ${GITHUB_WORKSPACE}/* ${{ secrets.USER }}@${{ secrets.PUBLIC_IPV4 }}:/home/${{ secrets.USER }}/app
+          rm -rf /home/$USER/app/
+          mkdir /home/$USER/app/
+          scp -r -o StrictHostKeyChecking=no -i key.pem secrets.env ${GITHUB_WORKSPACE}/* $USER@${{ secrets.PUBLIC_IPV4 }}:/home/${{ secrets.USER }}/app
 
       - name: Deploy docker compose
         run: |
