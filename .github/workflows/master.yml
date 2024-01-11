@@ -30,7 +30,7 @@ jobs:
           USER: ${{ secrets.USER }}
           PUBLIC_IPV4: ${{ secrets.PUBLIC_IPV4 }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$PUBLIC_IPV4 'cd /home/$USER && rm -rf app/ && mkdir app/'
+          ssh -o StrictHostKeyChecking=no -i key.pem quant_tradr_prod_user@ec2-44-219-245-255.compute-1.amazonaws.com 'cd /home/quant_tradr_prod_user && rm -rf app/ && mkdir app/'
           scp -r -o StrictHostKeyChecking=no -i key.pem secrets.env ${GITHUB_WORKSPACE}/* $USER@$PUBLIC_IPV4:/home/$USER/app
 
       - name: Deploy docker compose
