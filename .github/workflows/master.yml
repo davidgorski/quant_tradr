@@ -28,12 +28,14 @@ jobs:
       - name: Clean up files then copy files
         env:
           USER: ${{ secrets.USER }}
+          PUBLIC_IPV4: ${{ secrets.PUBLIC_IPV4 }}
         run: |
-          echo $USER | sed 's/./& /g'
-          rm -rf /home/$USER/app/
-          mkdir /home/$USER/app/
-          scp -r -o StrictHostKeyChecking=no -i key.pem secrets.env ${GITHUB_WORKSPACE}/* $USER@${{ secrets.PUBLIC_IPV4 }}:/home/${{ secrets.USER }}/app
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$PUBLIC_IPV4 'cd /home/$USER && rm -rf app/ && mkdir app/'
+          scp -r -o StrictHostKeyChecking=no -i key.pem secrets.env ${GITHUB_WORKSPACE}/* $USER@$PUBLIC_IPV4:/home/$USER/app
 
       - name: Deploy docker compose
+        env:
+          USER: ${{ secrets.USER }}
+          PUBLIC_IPV4: ${{ secrets.PUBLIC_IPV4 }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USER }}@${{ secrets.PUBLIC_IPV4 }} 'cd /home/${{ secrets.USER }}/app && sudo docker-compose down && sudo docker-compose --env-file secrets.env
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$PUBLIC_IPV4 'cd /home/$USER/app && sudo docker-compose down && sudo docker-compose --env-file secrets.env up -d'
