@@ -38,4 +38,4 @@ jobs:
           USER: ${{ secrets.USER }}
           PUBLIC_IPV4: ${{ secrets.PUBLIC_IPV4 }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$PUBLIC_IPV4 'cd /home/$USER/app && sudo docker-compose down && sudo docker-compose --env-file secrets.env up -d'
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$PUBLIC_IPV4 'cd /home/$USER/app && docker-compose down && docker-compose --env-file secrets.env up -d'
